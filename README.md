@@ -1,6 +1,6 @@
 # Web Broker
 
-  Connection with Postgre not implemented yet
+  Connection with Postgre not implemented yet.
   FIFO web broker
 ## Usage:
 
