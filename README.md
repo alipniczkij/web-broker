@@ -1,8 +1,7 @@
 # Web Broker
 
-## Connection with Postgre not implemented yet
-
-## FIFO web broker
+  Connection with Postgre not implemented yet
+  FIFO web broker
 ## Usage:
 
 ```
