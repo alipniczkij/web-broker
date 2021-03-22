@@ -1,7 +1,8 @@
 # Web Broker
-
-  Connection with Postgre not implemented yet.
   FIFO web broker
+
+  
+  Connection with Postgre not implemented yet
 ## Usage:
 
 ```
@@ -12,8 +13,8 @@ PUT http://localhost:8000/queue?v=task
 GET http://localhost:8000/queue
 ```
 
-### Run
+## Run app
 
 ```
-go run cmd/main.go
+make build && make run
 ```
