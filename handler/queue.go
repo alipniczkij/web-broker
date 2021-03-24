@@ -1,13 +1,18 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/alipniczkij/web-broker/utils"
 )
+
+type queueValue string
 
 var m sync.Mutex
 
@@ -23,7 +28,10 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	m.Lock()
 	defer m.Unlock()
-	datas := utils.ReadJSON(h.storage)
+	datas, err := utils.ReadJSON(h.storage)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 
 	if _, found := datas[keyNeeded]; found {
 		log.Printf("Try to append value %v", v)
@@ -37,24 +45,51 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handle GET request")
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "ParseForm() err: %v", err)
-		return
+	keyNeeded := string(r.URL.Path[1:])
+	timeout, err := strconv.Atoi(r.URL.Query().Get("timeout"))
+	if err != nil {
+		log.Printf("Timeout error %s", err)
+		timeout = 15
 	}
 
-	keyNeeded := string(r.URL.Path[1:])
+	ctx, cancel := context.WithTimeout(r.Context(), time.Duration(timeout)*time.Second)
+	defer cancel()
 
-	m.Lock()
-	defer m.Unlock()
-	datas := utils.ReadJSON(h.storage)
-
-	if value, found := datas[keyNeeded]; found {
-		if len(value) != 0 {
-			datas[keyNeeded] = datas[keyNeeded][1:]
-			utils.WriteJSON(h.storage, datas)
-			fmt.Fprintf(w, "%v", value[0])
+	for {
+		select {
+		case <-ctx.Done():
+			http.Error(w, "404 not found.", http.StatusNotFound)
+			return
+		default:
+			v, err := getValue(keyNeeded, h.storage)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			if v == "" {
+				continue
+			}
+			fmt.Fprintf(w, "%v", v)
 			return
 		}
 	}
-	http.Error(w, "404 not found.", http.StatusNotFound)
+}
+
+func getValue(key string, fileName string) (string, error) {
+	m.Lock()
+	defer m.Unlock()
+	datas, err := utils.ReadJSON(fileName)
+	if err != nil {
+		return "", err
+	}
+	if value, found := datas[key]; found {
+		if len(value) != 0 {
+			datas[key] = datas[key][1:]
+			err := utils.WriteJSON(fileName, datas)
+			if err != nil {
+				return "", err
+			}
+			return value[0], nil
+		}
+	}
+	return "", nil
 }
