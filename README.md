@@ -1,12 +1,11 @@
 # Web Broker
-  FIFO web broker
+  FIFO web broker with file storage
 
-  
-  Connection with Postgre not implemented yet
 ## Usage:
 
 ```
 PUT http://localhost:8000/queue?v=task
+PUT http://localhost:8000/color?v=red
 ```
 
 ```
@@ -17,4 +16,10 @@ GET http://localhost:8000/queue
 
 ```
 make build && make run
+```
+
+## Test app
+
+```
+make test
 ```
