@@ -1,5 +1,5 @@
 # Web Broker
-  FIFO web broker with file storage
+  FIFO web broker with file storage. Get requests supports long polling
 
 ## Usage:
 
