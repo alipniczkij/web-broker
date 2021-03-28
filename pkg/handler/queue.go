@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/alipniczkij/web-broker/utils"
+	"github.com/alipniczkij/web-broker/tools"
 )
 
 type queueValue string
@@ -28,7 +28,7 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	m.Lock()
 	defer m.Unlock()
-	datas, err := utils.ReadJSON(h.storage)
+	datas, err := tools.ReadJSON(h.storage)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -40,7 +40,7 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Try to set value %s", []string{v})
 		datas[keyNeeded] = []string{v}
 	}
-	utils.WriteJSON(h.storage, datas)
+	tools.WriteJSON(h.storage, datas)
 }
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 	timeout, err := strconv.Atoi(r.URL.Query().Get("timeout"))
 	if err != nil {
 		log.Printf("Timeout error %s", err)
-		timeout = 15
+		timeout = 10
 	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), time.Duration(timeout)*time.Second)
@@ -77,14 +77,14 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 func getValue(key string, fileName string) (string, error) {
 	m.Lock()
 	defer m.Unlock()
-	datas, err := utils.ReadJSON(fileName)
+	datas, err := tools.ReadJSON(fileName)
 	if err != nil {
 		return "", err
 	}
 	if value, found := datas[key]; found {
 		if len(value) != 0 {
 			datas[key] = datas[key][1:]
-			err := utils.WriteJSON(fileName, datas)
+			err := tools.WriteJSON(fileName, datas)
 			if err != nil {
 				return "", err
 			}

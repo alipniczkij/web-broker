@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/alipniczkij/web-broker/handler"
+	"github.com/alipniczkij/web-broker/pkg/handler"
 )
 
 func main() {
