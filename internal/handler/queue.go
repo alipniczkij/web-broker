@@ -8,17 +8,16 @@ import (
 	"strconv"
 	"time"
 
-	broker "github.com/alipniczkij/web-broker"
+	"github.com/alipniczkij/web-broker/internal/models"
 )
 
 func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handle PUT request")
 	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "ParseForm() err: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
 
-	putReq := &broker.PutValue{
+	putReq := &models.PutValue{
 		Key:   string(r.URL.Path[1:]),
 		Value: r.Form.Get("v"),
 	}
@@ -31,14 +30,13 @@ func (h *Handler) PutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handle GET request")
 	timeout, err := strconv.Atoi(r.URL.Query().Get("timeout"))
 	if err != nil {
 		log.Printf("Timeout error %s", err)
 		timeout = 10
 	}
 
-	getReq := &broker.GetValue{
+	getReq := &models.GetValue{
 		Key: string(r.URL.Path[1:]),
 	}
 

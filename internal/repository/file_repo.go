@@ -1,10 +1,9 @@
 package repository
 
 import (
-	"log"
 	"sync"
 
-	broker "github.com/alipniczkij/web-broker"
+	"github.com/alipniczkij/web-broker/internal/models"
 	"github.com/alipniczkij/web-broker/tools"
 )
 
@@ -18,7 +17,7 @@ func NewQueueRepo(fileName string) *QueueRepo {
 
 var m sync.Mutex
 
-func (q *QueueRepo) Get(getReq *broker.GetValue) (string, error) {
+func (q *QueueRepo) Get(getReq *models.GetValue) (string, error) {
 	m.Lock()
 	defer m.Unlock()
 
@@ -39,7 +38,7 @@ func (q *QueueRepo) Get(getReq *broker.GetValue) (string, error) {
 	return "", nil
 }
 
-func (q *QueueRepo) Put(putReq *broker.PutValue) error {
+func (q *QueueRepo) Put(putReq *models.PutValue) error {
 	m.Lock()
 	defer m.Unlock()
 
@@ -49,10 +48,8 @@ func (q *QueueRepo) Put(putReq *broker.PutValue) error {
 	}
 
 	if _, found := datas[putReq.Key]; found {
-		log.Printf("Try to append value %v", putReq.Value)
 		datas[putReq.Key] = append(datas[putReq.Key], putReq.Value)
 	} else {
-		log.Printf("Try to set value %s", []string{putReq.Value})
 		datas[putReq.Key] = []string{putReq.Value}
 	}
 	tools.WriteJSON(q.fileName, datas)

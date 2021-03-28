@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/alipniczkij/web-broker/pkg/repository"
+	"github.com/alipniczkij/web-broker/internal/repository"
 	"github.com/gorilla/mux"
 )
 

@@ -1,10 +1,10 @@
 package repository
 
-import broker "github.com/alipniczkij/web-broker"
+import "github.com/alipniczkij/web-broker/internal/models"
 
 type Queue interface {
-	Get(*broker.GetValue) (string, error)
-	Put(*broker.PutValue) error
+	Get(*models.GetValue) (string, error)
+	Put(*models.PutValue) error
 }
 
 type Repository struct {

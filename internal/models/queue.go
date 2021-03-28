@@ -1,4 +1,4 @@
-package broker
+package models
 
 type GetValue struct {
 	Key string
