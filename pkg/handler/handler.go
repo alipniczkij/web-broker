@@ -1,15 +1,16 @@
 package handler
 
 import (
+	"github.com/alipniczkij/web-broker/pkg/repository"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	storage string
+	repo *repository.Repository
 }
 
-func NewHandler(storageName string) *Handler {
-	return &Handler{storage: storageName}
+func NewHandler(repo *repository.Repository) *Handler {
+	return &Handler{repo: repo}
 }
 
 func (h *Handler) InitRoutes() *mux.Router {
