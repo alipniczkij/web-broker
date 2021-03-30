@@ -49,15 +49,3 @@ func main() {
 	log.Print("The app stopped")
 
 }
-
-func gracefulShutdown(cancelFunc context.CancelFunc) {
-	sigs := make(chan os.Signal, 1)
-
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGILL)
-
-	go func() {
-		sig := <-sigs
-		log.Printf("catched signal: %v", sig)
-		cancelFunc()
-	}()
-}
