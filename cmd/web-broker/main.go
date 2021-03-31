@@ -18,6 +18,7 @@ import (
 func main() {
 	port := flag.String("port", "8000", "Port")
 	storageName := flag.String("storage", "storage.json", "Storage for data")
+	flag.Parse()
 	log.Printf("Get port %s and storage %s", *port, *storageName)
 
 	repo := repository.NewRepository(*storageName)
