@@ -44,6 +44,7 @@ func (h *Handler) GetHandler(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	for {
+		time.Sleep(100 * time.Millisecond)
 		select {
 		case <-ctx.Done():
 			http.Error(w, "404 not found.", http.StatusNotFound)
